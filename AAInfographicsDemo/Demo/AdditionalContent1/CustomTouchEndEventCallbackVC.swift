@@ -15,14 +15,7 @@ import WebKit
 class CustomTouchEndEventCallbackVC: UIViewController {
     let kUserContentMessageNameChartTouchEnd = "touchEnd"
 
-    private lazy var aaChartView: AAChartView = {
-        let chartView = AAChartView()
-        chartView.translatesAutoresizingMaskIntoConstraints = false
-        chartView.isScrollEnabled = false // Disable chart content scrolling
-        chartView.delegate = self as AAChartViewDelegate
-        return chartView
-    }()
-    
+    private var aaChartView: AAChartView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,20 +29,21 @@ class CustomTouchEndEventCallbackVC: UIViewController {
         aaChartView.aa_drawChartWithChartOptions(aaOptions)
     }
     
-
     private func configureChartView() {
-        view.addSubview(aaChartView)
-        
-        NSLayoutConstraint.activate([
-            aaChartView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            aaChartView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            aaChartView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            aaChartView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
-        ])
+        aaChartView = AAChartView()
+        let chartViewWidth = view.frame.size.width
+        let chartViewHeight = view.frame.size.height - 220
+        aaChartView!.frame = CGRect(x: 0,
+                                    y: 60,
+                                    width: chartViewWidth,
+                                    height: chartViewHeight)
+        view.addSubview(aaChartView!)
+        aaChartView!.isScrollEnabled = false//Disable chart content scrolling
+        aaChartView!.delegate = self as AAChartViewDelegate
     }
     
     private func configureChartViewCustomEventMessageHandler() {
-        aaChartView.configuration.userContentController.add(AALeakAvoider.init(delegate: self), name: kUserContentMessageNameChartTouchEnd)
+        aaChartView!.configuration.userContentController.add(AALeakAvoider.init(delegate: self), name: kUserContentMessageNameChartTouchEnd)
     }
     
     private func topRoundedCornersStackingColumnChart() -> AAOptions {
@@ -61,7 +55,8 @@ class CustomTouchEndEventCallbackVC: UIViewController {
             .series([
                 AASeriesElement()
                     .name("Tokyo Hot")
-                    .borderRadius("50%")
+                    .borderRadiusTopLeft("50%")
+                    .borderRadiusTopRight("50%")
                     .data([2.10, 2.54, 2.78, 3.62, 4.41, 4.09, 3.83, 4.47, 4.20, 3.94, 3.80, 3.58, 3.19, 4.30, 3.69, 3.52, 3.02, 3.30]),
                 
                 AASeriesElement()

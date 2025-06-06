@@ -220,8 +220,7 @@ class CustomStyleChartVC: AABaseChartVC {
                 ])
     }
     
-    //Issue: https://github.com/AAChartModel/AAChartKit-Swift/issues/190
-    //API Doc: https://api.highcharts.com/highcharts/plotOptions.pyramid.reversed
+
     private func upsideDownPyramidChart() -> AAChartModel {
         AAChartModel()
             .chartType(.pyramid)

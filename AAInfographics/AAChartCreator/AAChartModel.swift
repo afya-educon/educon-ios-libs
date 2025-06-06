@@ -30,8 +30,7 @@
  
  */
 
-
-/// https://api.highcharts.com/highcharts/chart.animation
+//https://api.highcharts.com/highcharts/chart.animation
 public enum AAChartAnimationType: Int {
     case linear
     case easeInQuad
@@ -70,7 +69,7 @@ public enum AAChartAnimationType: Int {
     case easeTo
 }
 
-/// https://api.highcharts.com/highcharts/plotOptions
+//https://api.highcharts.com/highcharts/plotOptions
 public enum AAChartType: String {
     case column          //Column series display one column per value along an X axis.
     case bar             //A bar series is a special type of column series where the columns are horizontal.
@@ -81,10 +80,8 @@ public enum AAChartType: String {
     case scatter         //A scatter plot uses cartesian coordinates to display values for two variables for a set of data.
     case pie             //A pie chart is a circular graphic which is divided into slices to illustrate numerical proportion.
     case bubble          //A bubble series is a three dimensional series type where each point renders an X, Y and Z value. Each points is drawn as a bubble where the position along the X and Y axes mark the X and Y values, and the size of the bubble relates to the Z value.
-    case packedbubble    //A packed bubble series is a two dimensional series type, where each point renders a value in X, Y position. Each point is drawn as a bubble where the bubbles don't overlap with each other and the radius of the bubble relates to the value.
     case pyramid         //A pyramid series is a special type of funnel, without neck and reversed by default.
     case funnel          //Funnel charts are a type of chart often used to visualize stages in a sales project, where the top are the initial stages with the most clients. It requires that the modules/funnel.js file is loaded.
-    case columnpyramid   //Column pyramid series display one pyramid per value along an X axis. To display horizontal pyramids, set chart.inverted to true.
     case columnrange     //The column range is a cartesian series type with higher and lower Y values along an X axis. To display horizontal bars, set chart.inverted to true.
     case arearange       //The area range series is a cartesian series with higher and lower values for each point along an X axis, where the area between the values is shaded.
     case areasplinerange //The area spline range is a cartesian series type with higher and lower Y values along an X axis. The area inside the range is colored, and the graph outlining the area is a smoothed spline.
@@ -95,32 +92,32 @@ public enum AAChartType: String {
     case errorbar        //Error bars are a graphical representation of the variability of data and are used on graphs to indicate the error, or uncertainty in a reported measurement.
 }
 
-/// https://api.highcharts.com/highcharts/legend.layout
+//https://api.highcharts.com/highcharts/legend.layout
 public enum AAChartLayoutType: String {
     case horizontal, vertical
 }
 
-/// https://api.highcharts.com/highcharts/legend.align
+//https://api.highcharts.com/highcharts/legend.align
 public enum AAChartAlignType: String {
     case left, center, right
 }
 
-/// https://api.highcharts.com/highcharts/legend.verticalAlign
+//https://api.highcharts.com/highcharts/legend.verticalAlign
 public enum AAChartVerticalAlignType: String {
     case top, middle, bottom
 }
 
-/// https://api.highcharts.com/highcharts/chart.zoomType
+//https://api.highcharts.com/highcharts/chart.zoomType
 public enum AAChartZoomType: String {
     case none, x, y, xy
 }
 
-/// https://api.highcharts.com/highcharts/plotOptions.series.stacking
+//https://api.highcharts.com/highcharts/plotOptions.series.stacking
 public enum AAChartStackingType: String {
     case none = "", normal, percent
 }
 
-/// https://api.highcharts.com/highcharts/plotOptions.series.marker.symbol
+//https://api.highcharts.com/highcharts/plotOptions.series.marker.symbol
 public enum AAChartSymbolType: String {
     case circle   //◉ ◉ ◉
     case square   //■ ■ ■
@@ -133,12 +130,12 @@ public enum AAChartSymbolStyleType: String {
     case normal, innerBlank, borderBlank
 }
 
-/// https://api.highcharts.com/highcharts/title.style.fontWeight
+//https://api.highcharts.com/highcharts/title.style.fontWeight
 public enum AAChartFontWeightType: String {
     case thin, regular, bold
 }
 
-/// https://api.highcharts.com/highcharts/series.line.dashStyle
+//https://api.highcharts.com/highcharts/series.line.dashStyle
 public enum AAChartLineDashStyleType: String {
     case solid           //———————————————————————————————————
     case shortDash       //— — — — — — — — — — — — — — — — — —
@@ -158,14 +155,13 @@ public class AAChartModel: AAObject {
     public var animationType: AAChartAnimationType? //The type of chart animation
     public var animationDuration: Int?      //The chart rendering animation duration
     public var title: String?               //The chart title
-    public var titleAlign: AAChartAlignType?//The chart title text align style
     public var titleStyle: AAStyle?         //The chart title style
     public var subtitle: String?            //The chart subtitle
     public var subtitleAlign: AAChartAlignType?//The chart subtitle text align style
     public var subtitleStyle: AAStyle?      //The chart subtitle style
     public var chartType: AAChartType?      //The default series type for the chart. Can be any of the chart types listed under `AAChartType`. Defaults to line
-    public var stacking: AAChartStackingType?//Whether to stack the values of each series on top of each other. Possible values are null to disable, "normal" to stack by value or "percent". When stacking is enabled, data must be sorted in ascending X order
-    public var markerSymbol: AAChartSymbolType?//A predefined shape or symbol for the marker. When null, the symbol is pulled from options.symbols. Other possible values are "circle", "square", "diamond", "triangle" and "triangle-down"
+    public var stacking: AAChartStackingType? //Whether to stack the values of each series on top of each other. Possible values are null to disable, "normal" to stack by value or "percent". When stacking is enabled, data must be sorted in ascending X order
+    public var markerSymbol: AAChartSymbolType?   //A predefined shape or symbol for the marker. When null, the symbol is pulled from options.symbols. Other possible values are "circle", "square", "diamond", "triangle" and "triangle-down"
     public var markerSymbolStyle: AAChartSymbolStyleType?
     public var zoomType: AAChartZoomType?   //Decides in what dimensions the user can zoom by dragging the mouse. Can be one of x, y or xy
     public var inverted: Bool?              //Whether to invert the axes so that the x axis is vertical and y axis is horizontal. When true, the x axis is reversed by default. If a bar series is present in the chart, it will be inverted automatically.Inverting the chart doesn't have an effect if there are no cartesian series in the chart, or if the chart is polar.Defaults to false
@@ -194,14 +190,13 @@ public class AAChartModel: AAObject {
     public var yAxisAllowDecimals: Bool?    //The y axis values label allow decimals or not
     public var tooltipEnabled: Bool?        //Show the tooltip or not
     public var tooltipValueSuffix: String?  //Custom tooltip value unit suffix
-    public var colorsTheme: [Any]?          //An array containing the default colors for the chart's series. When all colors are used, new colors are pulled from the start again. Defaults to: ["#1e90ff", "#ef476f", "#ffd066", "#04d69f", "#25547c",]
+    public var colorsTheme: [Any]?          //An array containing the default colors for the chart's series. When all colors are used, new colors are pulled from the start again. Defaults to: ["#bb250c","#f67210","#fde680","#257679","#f1c6c5"]
     public var series: [Any]?               //An array of all the chart's series
     public var legendEnabled: Bool?         //Enable or disable the legend. Defaults to true
-    public var legendItemStyle: AAStyle?    //The item style of the legend
     public var backgroundColor: Any?        //The background color or gradient for the outer chart area. Defaults to #FFFFFF
-    public var borderRadius: Any?           //The corner radius of the outer chart border. Defaults to 0
+    public var borderRadius: Any?         //The corner radius of the outer chart border. Defaults to 0
     public var markerRadius: Float?         //The radius of the point marker. Defaults to 4
-    public var scrollablePlotArea: AAScrollablePlotArea?//Scroll properties if supported
+    public var scrollablePlotArea: AAScrollablePlotArea?    //Scroll properties if supported
     
 
     @discardableResult
@@ -219,12 +214,6 @@ public class AAChartModel: AAObject {
     @discardableResult
     public func title(_ prop: String) -> AAChartModel {
         title = prop
-        return self
-    }
-    
-    @discardableResult
-    public func titleAlign(_ prop: AAChartAlignType) -> AAChartModel {
-        titleAlign = prop
         return self
     }
     
@@ -479,12 +468,6 @@ public class AAChartModel: AAObject {
     }
     
     @discardableResult
-    public func legendItemStyle(_ prop: AAStyle) -> AAChartModel {
-        legendItemStyle = prop
-        return self
-    }
-    
-    @discardableResult
     public func backgroundColor(_ prop: Any) -> AAChartModel {
         backgroundColor = prop
         return self
@@ -503,7 +486,7 @@ public class AAChartModel: AAObject {
     }
     
     @discardableResult
-    public func borderRadius(_ prop: AABorderRadius) -> AAChartModel {
+    public func borderRadius(_ prop: Any) -> AAChartModel {
         borderRadius = prop
         return self
     }
@@ -513,6 +496,7 @@ public class AAChartModel: AAObject {
         scrollablePlotArea = prop
         return self
     }
+    
 
     public override init() {
         title                  = ""
@@ -522,7 +506,7 @@ public class AAChartModel: AAObject {
         chartType              = .line
         stacking               = AAChartStackingType.none
         zoomType               = AAChartZoomType.none //Disable gesture zoom by default
-        colorsTheme            = ["#1e90ff", "#ef476f", "#ffd066", "#04d69f", "#25547c",]
+        colorsTheme            = ["#1e90ff","#ef476f","#ffd066","#04d69f","#25547c",]
         tooltipEnabled         = true
         xAxisLabelsEnabled     = true
         xAxisVisible           = true

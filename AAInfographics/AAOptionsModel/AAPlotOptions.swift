@@ -30,8 +30,8 @@
  
  */
 
+import Foundation
 
-/// https://api.highcharts.com/highcharts/plotOptions
 public class AAPlotOptions: AAObject {
     public var series: AASeries?
     public var column: AAColumn?
@@ -42,7 +42,6 @@ public class AAPlotOptions: AAObject {
     public var areaspline: AAAreaspline?
     public var pie: AAPie?
     public var bubble: AABubble?
-    public var packedbubble: AAPackedbubble?
     public var columnrange: AAColumnrange?
     public var arearange: AAArearange?
     public var boxplot: AABoxplot?
@@ -99,12 +98,6 @@ public class AAPlotOptions: AAObject {
     @discardableResult
     public func bubble(_ prop: AABubble) -> AAPlotOptions {
         bubble = prop
-        return self
-    }
-    
-    @discardableResult
-    public func packedbubble(_ prop: AAPackedbubble) -> AAPlotOptions {
-        packedbubble = prop
         return self
     }
     
@@ -167,14 +160,12 @@ public class AALine: AAObject {
     }
 }
 
-
 public class AASpline: AALine {
     
     public override init() {
         
     }
 }
-
 
 public class AAArea: AASeries {
     public var fillColor: String?
@@ -218,14 +209,12 @@ public class AAArea: AASeries {
     }
 }
 
-
 public class AAAreaspline: AAArea {
     
     public override init() {
         
     }
 }
-
 
 public class AAArearange: AAObject {
     public var dataLabels: AADataLabels?

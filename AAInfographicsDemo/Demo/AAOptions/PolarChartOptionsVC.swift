@@ -19,7 +19,7 @@ class PolarChartOptionsVC: AABaseChartVC {
     
 
     //三角形雷达图
-    static func configureTriangleRadarChart() -> AAOptions {
+    private func configureTriangleRadarChart() -> AAOptions {
         let aaChartModel = AAChartModel()
             .chartType(.area)
             .backgroundColor(AAColor.white)
@@ -92,7 +92,7 @@ class PolarChartOptionsVC: AABaseChartVC {
     }
     
     //四边形雷达图
-    static func configureQuadrangleRadarChart() -> AAOptions {
+    private func configureQuadrangleRadarChart() -> AAOptions {
         let aaOptions: AAOptions = configureTriangleRadarChart()
         aaOptions.yAxis?.plotBands = [
             AAPlotBandsElement()
@@ -130,7 +130,7 @@ class PolarChartOptionsVC: AABaseChartVC {
     }
     
     //五边形雷达图
-    static func configurePentagonRadarChart() -> AAOptions {
+    private func configurePentagonRadarChart() -> AAOptions {
         let aaOptions = configureTriangleRadarChart()
         aaOptions.yAxis?.plotBands = [
             AAPlotBandsElement()
@@ -168,7 +168,7 @@ class PolarChartOptionsVC: AABaseChartVC {
     }
     
     //六边形雷达图
-    static func configureHexagonRadarChart() -> AAOptions {
+    private func configureHexagonRadarChart() -> AAOptions {
         let aaOptions = configureTriangleRadarChart()
         aaOptions.yAxis?.plotBands = [
             AAPlotBandsElement()
@@ -206,7 +206,7 @@ class PolarChartOptionsVC: AABaseChartVC {
     }
     
     //🕸蜘蛛网状雷达图
-    static func configureSpiderWebRadarChart() -> AAOptions {
+    private func configureSpiderWebRadarChart() -> AAOptions {
         let aaOptions = configureTriangleRadarChart()
         aaOptions.yAxis?.plotBands = [
             AAPlotBandsElement()
@@ -244,7 +244,7 @@ class PolarChartOptionsVC: AABaseChartVC {
     }
     
     //🕸蜘蛛网状雷达图
-    static func configureSpiderWebRadarChart2() -> AAOptions {
+    private func configureSpiderWebRadarChart2() -> AAOptions {
         let aaOptions = configureTriangleRadarChart()
         aaOptions.yAxis?.plotBands = [
             AAPlotBandsElement()

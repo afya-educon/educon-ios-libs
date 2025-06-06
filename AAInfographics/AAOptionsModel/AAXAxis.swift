@@ -30,13 +30,14 @@
  
  */
 
+import Foundation
 
-/// https://api.highcharts.com/highcharts/xAxis
 public class AAXAxis: AAAxis {
     
     public override init() {
         
     }
+
 }
 
 

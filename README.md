@@ -27,7 +27,7 @@
 
 * 🎂  **Environment friendly**. Support `iOS `、`iPadOS` and  `macOS`. Totally support `Swift` language, and there are more types version such as  `Objective-C` language version [AAChartKit](https://github.com/AAChartModel/AAChartKit) 、 `Java` language version [AAChartCore](https://github.com/AAChartModel/AAChartCore) 、`Kotlin` language version [AAInfographics](https://github.com/AAChartModel/AAChartCore-Kotlin) . To get more details you can see the [source code links list](https://github.com/AAChartModel/AAChartKit-Swift#source-code-Links).
 
-* 🚀  **Powerful and easy to use**. It supports `column chart`, `bar chart`, `area chart`, `areaspline chart`, `line chart`, `spline chart`, `radar chart`, `polar chart`, `pie chart`, `bubble chart`, `packedbubble chart`, `pyramid chart`, `funnel chart`, `columnpyramid chart`, `columnrange chart`, `arearange chart`, `mixed chart` and other graphics. Support for more chart types is planned.
+* 🚀  **Powerful and easy to use**. It supports `column chart`, `bar chart`, `area chart`, `areaspline chart`, `line chart`, `spline chart`, `radar chart`, `polar chart`, `pie chart`, `bubble chart`, `pyramid chart`, `funnel chart`, `columnrange chart`, `arearange chart`, `mixed chart` and other graphics. Support for more chart types is planned.
 
 * 📝  **Modern Declarative Syntax**. Unlike previous imperative programming techniques, drawing any custom chart in AAChartKit, you don't need to care about the inner implementation details which is annoying && boring. *Describe what you want, you will get what you described*.
 
@@ -35,7 +35,7 @@
 
 * ⛓  **Chain programming**.  Supports `chain programming syntax` like *SwiftUI* and *Jetpack Compose*.
 
-* 🦋  **Minimalist**. `AAChartView + AAChartModel = Chart`. The **AAInfographics** follows a minimalist formula: Chart view + Chart model = The chart you want, just like the powerful and beautiful charts framework [AAChartKit](https://github.com/AAChartModel/AAChartKit).
+* 🦋  **Minimalist**. `AAChartView + AAChartModel = Chart`. The AAChartKit follows a minimalist formula: Chart view + Chart model = The chart you want, just like the powerful and beautiful charts framework [AAChartKit](https://github.com/AAChartModel/AAChartKit).
 
 * 🖱 **Interaction event callback**. Support for monitoring [user click events and single finger move over events](https://github.com/AAChartModel/AAChartKit-Swift#support-user-click-events-and-move-over-events), which can be used to achieve double charts linked-working and even multiple charts linkage, as well as other more complex custom user interaction effects.
 ***
@@ -420,12 +420,10 @@ public enum AAChartType: String {
     case scatter         //A scatter plot uses cartesian coordinates to display values for two variables for a set of data.
     case pie             //A pie chart is a circular graphic which is divided into slices to illustrate numerical proportion.
     case bubble          //A bubble series is a three dimensional series type where each point renders an X, Y and Z value. Each points is drawn as a bubble where the position along the X and Y axes mark the X and Y values, and the size of the bubble relates to the Z value.
-    case packedbubble    //A packed bubble series is a two dimensional series type, where each point renders a value in X, Y position. Each point is drawn as a bubble where the bubbles don't overlap with each other and the radius of the bubble relates to the value.
     case pyramid         //A pyramid series is a special type of funnel, without neck and reversed by default.
     case funnel          //Funnel charts are a type of chart often used to visualize stages in a sales project, where the top are the initial stages with the most clients. It requires that the modules/funnel.js file is loaded.
-    case columnpyramid   //Column pyramid series display one pyramid per value along an X axis. To display horizontal pyramids, set chart.inverted to true.
     case columnrange     //The column range is a cartesian series type with higher and lower Y values along an X axis. To display horizontal bars, set chart.inverted to true.
-    case arearange       //The area range series is a cartesian series with higher and lower values for each point along an X axis, where the area between the values is shaded.
+    case arearange       //The area range series is a carteseian series with higher and lower values for each point along an X axis, where the area between the values is shaded.
     case areasplinerange //The area spline range is a cartesian series type with higher and lower Y values along an X axis. The area inside the range is colored, and the graph outlining the area is a smoothed spline.
     case boxplot         //A box plot is a convenient way of depicting groups of data through their five-number summaries: the smallest observation (sample minimum), lower quartile (Q1), median (Q2), upper quartile (Q3), and largest observation (sample maximum).
     case waterfall       //A waterfall chart displays sequentially introduced positive or negative values in cumulative columns.

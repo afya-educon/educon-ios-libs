@@ -30,6 +30,7 @@
  
  */
 
+import Foundation
 
 public enum AAChartAxisType: String {
     case linear
@@ -38,17 +39,10 @@ public enum AAChartAxisType: String {
     case category
 }
 
-public enum AAChartAxisTickmarkPlacementType: String {
-    case between
-    case on
-}
-
-/// https://api.highcharts.com/highcharts/xAxis
-/// https://api.highcharts.com/highcharts/yAxis
 public class AAAxis: AAObject {
     public var allowDecimals: Bool?
     public var alternateGridColor: Any?
-    public var crosshair: AACrosshair? //Focus line style settings
+    public var crosshair: AACrosshair? // Focus line style settings
     public var title: AATitle?
     public var type: String?
     public var dateTimeLabelFormats: AADateTimeLabelFormats?
@@ -57,11 +51,11 @@ public class AAAxis: AAObject {
     public var categories: [String]?
     public var reversed: Bool? //Whether to reverse the axis so that the highest number is closest to the origin. If the chart is inverted, the XOrY-axis is reversed by default.
     public var reversedStacks: Bool?
-    public var lineWidth: Float? //XOrY-axis line width
-    public var lineColor: String? //XOrY-axis line color
+    public var lineWidth: Float? // XOrY-axis line width
+    public var lineColor: String? // XOrY-axis line color
     public var linkedTo: Int?
-    public var max: Double? //XOrY-axis maximum
-    public var min: Double? //XOrY-axis minimum  (set to 0, there will be no negative numbers)
+    public var max: Double? // XOrY-axis maximum
+    public var min: Double? // XOrY-axis minimum  (set to 0, there will be no negative numbers)
     public var maxPadding: Float? //Padding of the max value relative to the length of the axis. A padding of 0.05 will make a 100px axis 5px longer. This is useful when you don't want the highest data value to appear on the edge of the plot area. When the axis' max option is set or a max extreme is set using axis.setExtremes(), the maxPadding will be ignored. Defaults to 0.01.
     public var minPadding: Float? //Padding of the min value relative to the length of the axis. A padding of 0.05 will make a 100px axis 5px longer. This is useful when you don't want the lowest data value to appear on the edge of the plot area.  Defaults to 0.05
     public var minRange: Int?
@@ -71,7 +65,7 @@ public class AAAxis: AAObject {
     public var minorGridLineDashStyle: String? //The dash or dot style of the minor grid lines.
     public var minorGridLineWidth: Float? //Width of the minor, secondary grid lines.
     public var minorTickColor: String? //Color for the minor tick marks.
-    public var minorTickInterval: Any? /*Specific tick interval in axis units for the minor ticks. On a linear axis, if "auto", the minor tick interval is calculated as a fifth of the tickInterval. If null or undefined, minor ticks are not shown.
+    public var minorTickInterval: Any?/*Specific tick interval in axis units for the minor ticks. On a linear axis, if "auto", the minor tick interval is calculated as a fifth of the tickInterval. If null or undefined, minor ticks are not shown.
      
      On logarithmic axes, the unit is the power of the value. For example, setting the minorTickInterval to 1 puts one tick on each of 0.1, 1, 10, 100 etc. Setting the minorTickInterval to 0.1 produces 9 ticks between 1 and 10, 10 and 100 etc.
 
@@ -80,30 +74,30 @@ public class AAAxis: AAObject {
     public var minorTickPosition: String? //The position of the minor tick marks relative to the axis line. Can be one of inside and outside. Defaults to outside.
     public var minorTickWidth: Float? //The pixel width of the minor tick mark.
     
-    public var gridLineWidth: Float? //XOrY-axis grid line width
-    public var gridLineColor: String? //XOrY-axis grid line color
-    public var gridLineDashStyle: String? //XOrY-axis grid line style
+    public var gridLineWidth: Float? // XOrY-axis grid line width
+    public var gridLineColor: String? // XOrY-axis grid line color
+    public var gridLineDashStyle: String? // XOrY-axis grid line style
     public var gridLineInterpolation: String?
     public var gridZIndex: Int?
-    public var offset: Float? //The distance in pixels from the plot area to the axis line. A positive offset moves the axis with it's line, labels and ticks away from the plot area. This is typically used when two or more axes are displayed on the same side of the plot. With multiple axes the offset is dynamically adjusted to avoid collision, this can be overridden by setting offset explicitly.
-    public var labels: AALabels? //Used to set the XOrY-axis text related
-    public var visible: Bool? //Used to set whether the XOrY-axis and XOrY-axis text are displayed
-    public var opposite: Bool? //Whether to display the coordinate axis on the opposite surface. By default, the X or Y axis is displayed below the chart, the y axis is on the left, the coordinate axis is displayed on the opposite surface, and the X or Y axis is displayed on the top. The axis is displayed on the right (that is, the coordinate axis is displayed on the opposite side). This configuration is generally used for multi-axis display, and in Highstock, the y-axis is displayed on the opposite side by default. The default is: false.
+    public var offset: Float? // XOrY-axis vertical offset
+    public var labels: AALabels? // Used to set the XOrY-axis text related
+    public var visible: Bool? // Used to set whether the XOrY-axis and XOrY-axis text are displayed
+    public var opposite: Bool? // Whether to display the coordinate axis on the opposite surface. By default, the X or Y axis is displayed below the chart, the y axis is on the left, the coordinate axis is displayed on the opposite surface, and the X or Y axis is displayed on the top. The axis is displayed on the right (that is, the coordinate axis is displayed on the opposite side). This configuration is generally used for multi-axis display, and in Highstock, the y-axis is displayed on the opposite side by default. The default is: false.
 
-    public var startOnTick: Bool? //Whether to force the axis to start on a tick. Use this option with the minPadding option to control the axis start. The default is false.
-    public var endOnTick: Bool? //Whether to force the axis to end on a tick. Use this option with the minPadding option to control the axis end. The default is false.
-    public var tickColor: String? //Color of tick mark below X or Y axis
+    public var startOnTick: Bool? // Whether to force the axis to start on a tick. Use this option with the minPadding option to control the axis start. The default is false.
+    public var endOnTick: Bool?// Whether to force the axis to end on a tick. Use this option with the minPadding option to control the axis end. The default is false.
+    public var tickColor: String? // Color of tick mark below X or Y axis
     public var tickAmount: Int?
-    public var tickInterval: Float? //Number of ticks on the X or Y axis (set the X or Y axis content every few points:
-    public var tickmarkPlacement: String? //This parameter is only valid for the classification axis. When the value is on, the tick mark will be displayed above the classification; when the value is between, the tick mark will be displayed between the two classifications. When tickInterval is 1, the default is between, otherwise it is on. The default is: null.
-    public var tickWidth: Float? //The width of the axis tick marks. When set to 0, tick marks are not displayed.
-    public var tickLength: Float? //The length of the axis tick marks. The default is: 10.
-    public var tickPosition: String? //Position of the tick line relative to the axis line. Available values ​​are "inside" and "outside", which represent the inside and outside of the axis line, respectively. The default is: "outside".
-    public var tickPositions: [Any]? //Custom XOrY-axis coordinates
+    public var tickInterval: Float? // Number of ticks on the X or Y axis (set the X or Y axis content every few points:
+    public var tickmarkPlacement: String? // This parameter is only valid for the classification axis. When the value is on, the tick mark will be displayed above the classification; when the value is between, the tick mark will be displayed between the two classifications. When tickInterval is 1, the default is between, otherwise it is on. The default is: null.
+    public var tickWidth: Float? // The width of the axis tick marks. When set to 0, tick marks are not displayed.
+    public var tickLength: Float? // The length of the axis tick marks. The default is: 10.
+    public var tickPosition: String? // Position of the tick line relative to the axis line. Available values ​​are "inside" and "outside", which represent the inside and outside of the axis line, respectively. The default is: "outside".
+    public var tickPositions: [Any]? // Custom XOrY-axis coordinates
     public var height: Any? //number | string
     public var top: Any? //number | string
-    public var events: AAAxisEvents?
 
+    
     @discardableResult
     public func allowDecimals(_ prop: Bool?) -> Self {
         allowDecimals = prop
@@ -363,8 +357,8 @@ public class AAAxis: AAObject {
     }
     
     @discardableResult
-    public func tickmarkPlacement(_ prop: AAChartAxisTickmarkPlacementType?) -> Self {
-        tickmarkPlacement = prop?.rawValue
+    public func tickmarkPlacement(_ prop: String?) -> Self {
+        tickmarkPlacement = prop
         return self
     }
     
@@ -404,15 +398,10 @@ public class AAAxis: AAObject {
         return self
     }
     
-    @discardableResult
-    public func events(_ prop: AAAxisEvents?) -> Self {
-        events = prop
-        return self
-    }
-    
     public override init() {
         
     }
+    
 }
 
 
@@ -479,76 +468,4 @@ public class AADateTimeLabelFormats: AAObject {
     }
 }
 
-/**
- events:{
- afterBreaks:undefined
- afterSetExtremes:undefined
- pointBreak:undefined
- pointBreakOut:undefined
- pointInBreak:undefined
- setExtremes:undefined
- }
- */
-public class AAAxisEvents: AAObject {
-    public var afterBreaks: String?
-    public var afterSetExtremes: String?
-    public var pointBreak: String?
-    public var pointBreakOut: String?
-    public var pointInBreak: String?
-    public var setExtremes: String?
-    
-    @discardableResult
-    public func afterBreaks(_ prop: String?) -> AAAxisEvents {
-        afterBreaks = prop?.aa_toPureJSString()
-        return self
-    }
-    
-    @discardableResult
-    public func afterSetExtremes(_ prop: String?) -> AAAxisEvents {
-        afterSetExtremes = prop?.aa_toPureJSString()
-        return self
-    }
-    
-    @discardableResult
-    public func pointBreak(_ prop: String?) -> AAAxisEvents {
-        pointBreak = prop?.aa_toPureJSString()
-        return self
-    }
-    
-    @discardableResult
-    public func pointBreakOut(_ prop: String?) -> AAAxisEvents {
-        pointBreakOut = prop?.aa_toPureJSString()
-        return self
-    }
-    
-    @discardableResult
-    public func pointInBreak(_ prop: String?) -> AAAxisEvents {
-        pointInBreak = prop?.aa_toPureJSString()
-        return self
-    }
-    
-    @discardableResult
-    public func setExtremes(_ prop: String?) -> AAAxisEvents {
-        setExtremes = prop?.aa_toPureJSStringWithParentheses()
-        return self
-    }
-    
-    public override init() {
-        
-    }
-}
 
-
-private extension String {
-    
-    func aa_toPureJSStringWithParentheses() -> String {
-        //https://stackoverflow.com/questions/34334232/why-does-function-not-work-but-function-does-chrome-devtools-node
-        var pureJSStr = "(\(self))"
-        pureJSStr = pureJSStr.replacingOccurrences(of: "'", with: "\"")
-        pureJSStr = pureJSStr.replacingOccurrences(of: "\0", with: "")
-        pureJSStr = pureJSStr.replacingOccurrences(of: "\n", with: "")
-  
-        return pureJSStr
-    }
-    
-}

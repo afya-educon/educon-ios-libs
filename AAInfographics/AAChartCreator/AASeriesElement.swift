@@ -42,7 +42,7 @@ public enum AAChartLineStepType: String {
 }
 
 //https://api.highcharts.com/highcharts/series
-open class AASeriesElement: AAObject {
+public class AASeriesElement: AAObject {
     public var type: String?               //A chart type series. If the type option is not specified, it is inherited from `chart.type`.
     public var name: String?               //The name of the series as shown in the legend, tooltip etc.
     public var data: [Any]?                //An array of data points for the series
@@ -52,6 +52,10 @@ open class AASeriesElement: AAObject {
     public var borderColor: String?        //The border color, It is only valid for column, bar, pie, columnrange, pyramid and funnel chart types
     public var borderWidth: Float?         //The border width, It is only valid for column, bar, pie, columnrange, pyramid and funnel chart types
     public var borderRadius: Any?          //The corner radius of the border surrounding each column or bar.
+    public var borderRadiusTopLeft: Any?
+    public var borderRadiusTopRight: Any?
+    public var borderRadiusBottomLeft: Any?
+    public var borderRadiusBottomRight: Any?
     public var fillColor: Any?             //The fill color, It is only valid for area, areaspline, arearange and arearangespline chart types
     public var fillOpacity: Float?         //The fill opacity, It is only valid for area, areaspline, arearange and arearangespline chart types. Note that when you set an explicit fillColor, the fillOpacity is not applied. Instead, you should define the opacity in the fillColor with an rgba color definition. Deafualt value：0.75.
     public var threshold: Float?           //The threshold, also called zero level or base level. For line type series this is only used in conjunction with negativeColor. default：0.
@@ -86,293 +90,310 @@ open class AASeriesElement: AAObject {
     public var enabledCrosshairs: Bool?
     public var jitter: AAJitter?           //Only useful for scatter chart and bubble chart
     public var clip: Bool?
-    public var keys: [String]?
     
     @discardableResult
-    public func type(_ prop: AAChartType) -> Self {
+    public func type(_ prop: AAChartType) -> AASeriesElement {
         type = prop.rawValue
         return self
     }
     
     @discardableResult
-    public func name(_ prop: String) -> Self {
+    public func name(_ prop: String) -> AASeriesElement {
         name = prop
         return self
     }
     
     @discardableResult
-    public func data(_ prop: [Any]) -> Self {
+    public func data(_ prop: [Any]) -> AASeriesElement {
         data = prop
         return self
     }
     
     @discardableResult
-    public func lineWidth(_ prop: Float) -> Self {
+    public func lineWidth(_ prop: Float) -> AASeriesElement {
         lineWidth = prop
         return self
     }
     
     @discardableResult
-    public func borderColor(_ prop: String) -> Self {
+    public func borderColor(_ prop: String) -> AASeriesElement {
         borderColor = prop
         return self
     }
     
     @discardableResult
-    public func borderWidth(_ prop: Float) -> Self {
+    public func borderWidth(_ prop: Float) -> AASeriesElement {
         borderWidth = prop
         return self
     }
         
     @discardableResult
-    public func borderRadius(_ prop: Float) -> Self {
+    public func borderRadius(_ prop: Float) -> AASeriesElement {
         borderRadius = prop
         return self
     }
     
     @discardableResult
-    public func borderRadius(_ prop: String) -> Self {
+    public func borderRadius(_ prop: String) -> AASeriesElement {
         borderRadius = prop
         return self
     }
     
     @discardableResult
-    public func borderRadius(_ prop: Any) -> Self {
+    public func borderRadius(_ prop: Any) -> AASeriesElement {
         borderRadius = prop
         return self
     }
     
     @discardableResult
-    public func fillColor(_ prop: Any) -> Self {
+    public func borderRadiusTopLeft(_ prop: Any) -> AASeriesElement {
+        borderRadiusTopLeft = prop
+        return self
+    }
+    
+    @discardableResult
+    public func borderRadiusTopRight(_ prop: Any) -> AASeriesElement {
+        borderRadiusTopRight = prop
+        return self
+    }
+    
+    @discardableResult
+    public func borderRadiusBottomLeft(_ prop: Any) -> AASeriesElement {
+        borderRadiusBottomLeft = prop
+        return self
+    }
+    
+    @discardableResult
+    public func borderRadiusBottomRight(_ prop: Any) -> AASeriesElement {
+        borderRadiusBottomRight = prop
+        return self
+    }
+    
+    @discardableResult
+    public func fillColor(_ prop: Any) -> AASeriesElement {
         fillColor = prop
         return self
     }
     
     @discardableResult
-    public func color(_ prop: Any) -> Self {
+    public func color(_ prop: Any) -> AASeriesElement {
         color = prop
         return self
     }
     
     @discardableResult
-    public func colors(_ prop: [Any]) -> Self {
+    public func colors(_ prop: [Any]) -> AASeriesElement {
         colors = prop
         return self
     }
     
     @discardableResult
-    public func fillOpacity(_ prop: Float) -> Self {
+    public func fillOpacity(_ prop: Float) -> AASeriesElement {
         fillOpacity = prop
         return self
     }
     
     @discardableResult
-    public func threshold(_ prop: Float) -> Self {
+    public func threshold(_ prop: Float) -> AASeriesElement {
         threshold = prop
         return self
     }
     
     @discardableResult
-    public func negativeColor(_ prop: Any) -> Self {
+    public func negativeColor(_ prop: Any) -> AASeriesElement {
         negativeColor = prop
         return self
     }
     
     @discardableResult
-    public func negativeFillColor(_ prop: Any) -> Self {
+    public func negativeFillColor(_ prop: Any) -> AASeriesElement {
         negativeFillColor = prop
         return self
     }
     
     @discardableResult
-    public func dashStyle(_ prop: AAChartLineDashStyleType) -> Self {
+    public func dashStyle(_ prop: AAChartLineDashStyleType) -> AASeriesElement {
         dashStyle = prop.rawValue
         return self
     }
     
     @discardableResult
-    public func xAxis(_ prop: Int) -> Self {
+    public func xAxis(_ prop: Int) -> AASeriesElement {
         xAxis = prop
         return self
     }
     
     @discardableResult
-    public func yAxis(_ prop: Int) -> Self {
+    public func yAxis(_ prop: Int) -> AASeriesElement {
         yAxis = prop
         return self
     }
     
     @discardableResult
-    public func dataLabels(_ prop: AADataLabels) -> Self {
+    public func dataLabels(_ prop: AADataLabels) -> AASeriesElement {
         dataLabels = prop
         return self
     }
     
     @discardableResult
-    public func marker(_ prop: AAMarker) -> Self {
+    public func marker(_ prop: AAMarker) -> AASeriesElement {
         marker = prop
         return self
     }
     
     @discardableResult
-    public func step(_ prop: Any) -> Self {
+    public func step(_ prop: Any) -> AASeriesElement {
         step = prop
         return self
     }
     
     @discardableResult
-    public func step(_ prop: AAChartLineStepType) -> Self {
+    public func step(_ prop: AAChartLineStepType) -> AASeriesElement {
         step = prop.rawValue
         return self
     }
     
     @discardableResult
-    public func states(_ prop: AAStates) -> Self {
+    public func states(_ prop: AAStates) -> AASeriesElement {
         states = prop
         return self
     }
     
     @discardableResult
-    public func showInLegend(_ prop: Bool) -> Self {
+    public func showInLegend(_ prop: Bool) -> AASeriesElement {
         showInLegend = prop
         return self
     }
     
     @discardableResult
-    public func colorByPoint(_ prop: Bool) -> Self {
+    public func colorByPoint(_ prop: Bool) -> AASeriesElement {
         colorByPoint = prop
         return self
     }
     
     @discardableResult
-    public func allowPointSelect(_ prop: Bool) -> Self {
+    public func allowPointSelect(_ prop: Bool) -> AASeriesElement {
         allowPointSelect = prop
         return self
     }
     
     @discardableResult
-    public func zIndex(_ prop: Int) -> Self {
+    public func zIndex(_ prop: Int) -> AASeriesElement {
         zIndex = prop
         return self
     }
     
     @discardableResult
-    public func size(_ prop: Any) -> Self {
+    public func size(_ prop: Any) -> AASeriesElement {
         size = prop
         return self
     }
     
     @discardableResult
-    public func innerSize(_ prop: Any) -> Self {
+    public func innerSize(_ prop: Any) -> AASeriesElement {
         innerSize = prop
         return self
     }
     
     @discardableResult
-    public func minSize(_ prop: Any) -> Self {
+    public func minSize(_ prop: Any) -> AASeriesElement {
         minSize = prop
         return self
     }
     
     @discardableResult
-    public func shadow(_ prop: AAShadow) -> Self {
+    public func shadow(_ prop: AAShadow) -> AASeriesElement {
         shadow = prop
         return self
     }
     
     @discardableResult
-    public func zones(_ prop: [AAZonesElement]) -> Self {
+    public func zones(_ prop: [AAZonesElement]) -> AASeriesElement {
         zones = prop
         return self
     }
     
     @discardableResult
-    public func zoneAxis(_ prop: String) -> Self {
+    public func zoneAxis(_ prop: String) -> AASeriesElement {
         zoneAxis = prop
         return self
     }
     
     @discardableResult
-    public func zoneAxis(_ prop: AAChartZoneAxisType) -> Self {
+    public func zoneAxis(_ prop: AAChartZoneAxisType) -> AASeriesElement {
         zoneAxis = prop.rawValue
         return self
     }
     
     @discardableResult
-    public func stack(_ prop: String) -> Self {
+    public func stack(_ prop: String) -> AASeriesElement {
         stack = prop
         return self
     }
     
     @discardableResult
-    public func tooltip(_ prop: AATooltip) -> Self {
+    public func tooltip(_ prop: AATooltip) -> AASeriesElement {
         tooltip = prop
         return self
     }
     
     @discardableResult
-    public func pointPlacement(_ prop: Any) -> Self {
+    public func pointPlacement(_ prop: Any) -> AASeriesElement {
         pointPlacement = prop
         return self
     }
 
     @discardableResult
-    public func pointPadding(_ prop: Float) -> Self {
+    public func pointPadding(_ prop: Float) -> AASeriesElement {
         pointPadding = prop
         return self
     }
     
     @discardableResult
-    public func enableMouseTracking(_ prop: Bool) -> Self {
+    public func enableMouseTracking(_ prop: Bool) -> AASeriesElement {
         enableMouseTracking = prop
         return self
     }
     
     @discardableResult
-    public func enabledCrosshairs(_ prop: Bool) -> Self {
+    public func enabledCrosshairs(_ prop: Bool) -> AASeriesElement {
         enabledCrosshairs = prop
         return self
     }
     
     @discardableResult
-    public func dataSorting(_ prop: AADataSorting) -> Self {
+    public func dataSorting(_ prop: AADataSorting) -> AASeriesElement {
         dataSorting = prop
         return self
     }
     
     @discardableResult
-    public func reversed(_ prop: Bool) -> Self {
+    public func reversed(_ prop: Bool) -> AASeriesElement {
         reversed = prop
         return self
     }
 
     @discardableResult
-    public func id(_ prop: String) -> Self {
+    public func id(_ prop: String) -> AASeriesElement {
         id = prop
         return self
     }
 
     @discardableResult
-    public func connectNulls(_ prop: Bool) -> Self {
+    public func connectNulls(_ prop: Bool) -> AASeriesElement {
         connectNulls = prop
         return self
     }
 
     @discardableResult
-    public func jitter(_ prop: AAJitter) -> Self {
+    public func jitter(_ prop: AAJitter) -> AASeriesElement {
         jitter = prop
         return self
     }
     
     @discardableResult
-    public func clip(_ prop: Bool) -> Self {
+    public func clip(_ prop: Bool) -> AASeriesElement {
         clip = prop
-        return self
-    }
-    
-    @discardableResult
-    public func keys(_ prop: [String]?) -> Self {
-        keys = prop
         return self
     }
     

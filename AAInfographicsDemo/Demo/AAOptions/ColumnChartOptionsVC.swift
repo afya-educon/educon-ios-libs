@@ -19,8 +19,8 @@ class ColumnChartOptionsVC: AABaseChartVC {
     
     override func chartConfigurationWithSelectedIndex(_ selectedIndex: Int) -> Any? {
         switch selectedIndex {
-        case 0: return ColumnChartOptionsVC.disableGroupingColumnChart()
-        case 1: return ColumnChartOptionsVC.disableGroupingBarChart()
+        case 0: return disableGroupingColumnChart()
+        case 1: return disableGroupingBarChart()
 
         default:
             return AAOptions()
@@ -103,7 +103,7 @@ class ColumnChartOptionsVC: AABaseChartVC {
     //});
 
     //https://api.highcharts.com/highcharts/series.column.grouping
-    static func disableGroupingColumnChart() -> AAOptions {
+    private func disableGroupingColumnChart() -> AAOptions {
         AAOptions()
             .chart(AAChart()
                     .type(.column))
@@ -160,7 +160,7 @@ class ColumnChartOptionsVC: AABaseChartVC {
         
     }
     
-    static func disableGroupingBarChart() -> AAOptions {
+    private func disableGroupingBarChart() -> AAOptions {
         let aaOptions = disableGroupingColumnChart()
         
         aaOptions.chart?.type(.bar)

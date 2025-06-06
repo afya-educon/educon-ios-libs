@@ -30,8 +30,7 @@
  
  */
 
-
-/// https://api.highcharts.com/highcharts/
+//https://api.highcharts.com/highcharts/
 public class AAOptions: AAObject {
     public var chart: AAChart?
     public var title: AATitle?
@@ -49,14 +48,8 @@ public class AAOptions: AAObject {
     public var credits: AACredits?
     public var defaultOptions: AALang?
     
-    internal var clickEventEnabled: Bool? //Please DO NOT use this property
-    internal var touchEventEnabled: Bool? //Please DO NOT use this property
-    
-    //beforeDrawChartJavaScript
-    public var beforeDrawChartJavaScript: String?
-    //afterDrawChartJavaScript
-    public var afterDrawChartJavaScript: String?
-
+    internal var clickEventEnabled: Bool?//Please DO NOT use this property
+    internal var touchEventEnabled: Bool?//Please DO NOT use this property
     
     @discardableResult
     public func chart(_ prop: AAChart?) -> AAOptions {
@@ -148,23 +141,12 @@ public class AAOptions: AAObject {
         return self
     }
     
-    @discardableResult
-    public func beforeDrawChartJavaScript(_ prop: String?) -> AAOptions {
-        beforeDrawChartJavaScript = prop
-        return self
-    }
-    
-    @discardableResult
-    public func afterDrawChartJavaScript(_ prop: String?) -> AAOptions {
-        afterDrawChartJavaScript = prop
-        return self
-    }
-    
     public override init() {
         let aaCredits = AACredits()
         aaCredits.enabled = false
         credits = aaCredits
     }
+
 }
 
 
@@ -177,8 +159,11 @@ public class AAOptionsConstructor {
             .type(aaChartModel.chartType)
             .inverted(aaChartModel.inverted)
             .backgroundColor(aaChartModel.backgroundColor)
+//            .zoomType(aaChartModel.zoomType)
             .zooming(AAZooming()
                 .type(aaChartModel.zoomType))
+//            .pinchType(aaChartModel.zoomType) //Set gesture zoom direction
+//            .panning(true) //Set whether gestures can be panned after zooming
             .polar(aaChartModel.polar) //Whether to polarize the chart (turn on polar mode)
             .scrollablePlotArea(aaChartModel.scrollablePlotArea)
         aaChart.margin = aaChartModel.margin
@@ -187,9 +172,7 @@ public class AAOptionsConstructor {
             .text(aaChartModel.title) //Title text content
         
         if aaChartModel.title != "" {
-            aaTitle
-                .align(aaChartModel.titleAlign) //Title horizontal alignment
-                .style(aaChartModel.titleStyle)
+            aaTitle.style(aaChartModel.titleStyle)
         }
         
         var aaSubtitle: AASubtitle?
@@ -208,19 +191,18 @@ public class AAOptionsConstructor {
         
         let aaPlotOptions = AAPlotOptions()
             .series(AASeries()
-                .stacking(aaChartModel.stacking))
+                        .stacking(aaChartModel.stacking))
         
         aaPlotOptions.series?
             .animation(AAAnimation()
-                .easing(aaChartModel.animationType)
-                .duration(aaChartModel.animationDuration))
+                        .easing(aaChartModel.animationType)
+                        .duration(aaChartModel.animationDuration))
         
         configurePlotOptionsMarkerStyle(aaChartModel, aaPlotOptions)
         configurePlotOptionsDataLabels(aaPlotOptions, aaChartModel)
         
         let aaLegend = AALegend()
             .enabled(aaChartModel.legendEnabled)
-            .itemStyle(aaChartModel.legendItemStyle)
         
         let aaOptions = AAOptions()
             .chart(aaChart)
@@ -270,6 +252,7 @@ public class AAOptionsConstructor {
         }
     }
     
+    
     private static func configurePlotOptionsDataLabels(
         _ aaPlotOptions: AAPlotOptions,
         _ aaChartModel: AAChartModel
@@ -285,7 +268,7 @@ public class AAOptionsConstructor {
             let aaColumn = AAColumn()
                 .borderWidth(0)
                 .borderRadius(aaChartModel.borderRadius)
-            
+
             if (aaChartModel.polar == true) {
                 aaColumn
                     .pointPadding(0)
@@ -297,7 +280,7 @@ public class AAOptionsConstructor {
             let aaBar = AABar()
                 .borderWidth(0)
                 .borderRadius(aaChartModel.borderRadius)
-            
+
             aaPlotOptions.bar(aaBar)
             
         case .pie:
@@ -316,7 +299,7 @@ public class AAOptionsConstructor {
             let aaColumnrange = AAColumnrange()
                 .borderWidth(0)
                 .borderRadius(aaChartModel.borderRadius)
-            
+
             aaPlotOptions.columnrange(aaColumnrange)
             
         default: break
@@ -344,9 +327,7 @@ public class AAOptionsConstructor {
             || aaChartType == .boxplot
             || aaChartType == .waterfall
             || aaChartType == .polygon
-            || aaChartType == .gauge
-            || aaChartType == .columnpyramid
-        {
+            || aaChartType == .gauge {
             
             if aaChartType != .gauge {
                 let aaXAxisLabelsEnabled = aaChartModel.xAxisLabelsEnabled
@@ -365,8 +346,8 @@ public class AAOptionsConstructor {
                     .visible(aaChartModel.xAxisVisible) //whether the x axis is visible
                     .tickInterval(aaChartModel.xAxisTickInterval) //Number of x-axis coordinate point intervals
                     .title(AATitle()
-                        .text(aaChartModel.xAxisTitle)) //x axis title
-                
+                            .text(aaChartModel.xAxisTitle)) //x axis title
+                                            
                 aaOptions.xAxis(aaXAxis)
             }
             
@@ -389,7 +370,7 @@ public class AAOptionsConstructor {
                 .lineWidth(aaChartModel.yAxisLineWidth) //Set the width of the y-axis axis, which is 0 to hide the y-axis axis
                 .visible(aaChartModel.yAxisVisible)
                 .title(AATitle()
-                    .text(aaChartModel.yAxisTitle)) //y axis title
+                        .text(aaChartModel.yAxisTitle)) //y axis title
             
             aaOptions.yAxis(aaYAxis)
         }

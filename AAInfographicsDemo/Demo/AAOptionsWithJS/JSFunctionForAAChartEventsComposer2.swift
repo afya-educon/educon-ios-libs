@@ -210,7 +210,7 @@ Highcharts.chart('container', {
         let defaultPointData = AADataElement()
             .y(29.9)
             .selected(true)
-            .toDic()
+            .toDic()!
 
         let dataArr = [
             29.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, defaultPointData
@@ -254,7 +254,7 @@ Highcharts.chart('container', {
     
     //https://github.com/AAChartModel/AAChartKit/issues/1531
     //https://stackoverflow.com/questions/42062016/in-high-chart-how-to-add-event-for-label-click
-    static func addEventForLabelClick() -> AAOptions {
+    static func configureBlinkMarkerChart() -> AAOptions {
         AAOptions()
             .chart(AAChart()
                 .type(.areaspline)
@@ -684,93 +684,5 @@ Highcharts.chart('container', {
                     .data([0.60, 0.51, 0.52, 0.53, 0.64, 0.84, 0.65, 0.68, 0.63, 0.47, 0.72, 0.60, 0.65, 0.74, 0.66, 0.65, 0.71, 0.59, 0.65, 0.77, 0.52, 0.53, 0.58, 0.53]),
             ])
     }
-    
-    /**
-     // HTML结构
-     const chartContainer = document.getElementById('container');
-
-     // 初始化图表
-     const chart = Highcharts.chart('container', {
-         chart: {
-             type: 'line',
-             zoomType: 'xy',
-             panning: true,
-         },
-       
-         tooltip: {
-             followTouchMove: false
-         },
-         
-         series: [{
-             data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-         }]
-     });
-     */
-    static func simpleZoomingChart() -> AAOptions {
-        AAOptions()
-            .chart(AAChart()
-                .type(.line)
-                .zoomType(.x)
-                .panning(AAPanning()
-                    .enabled(true)))
-            .tooltip(AATooltip()
-                .followTouchMove(false))
-            .series([
-                AASeriesElement()
-                    .data([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
-            ])
-    }
-    
-    static func simpleZoomingChart2() -> AAOptions {
-        AAOptions()
-            .chart(AAChart()
-                .type(.area)
-                .zooming(AAZooming()
-                    .singleTouch(true)
-                    .type(.xy)
-                    .pinchType(.xy)
-                    .resetButton(AAResetButton()
-                        .theme(AAButtonTheme()
-                            .fill(AAColor.yellow)
-                            .stroke(AAColor.green)
-                            .strokeWidth(3)
-                            .r(3)
-                            .states(AAButtonThemeStates()
-                                .hover(AAButtonThemeStatesHover()
-                                    .fill(AAColor.red)
-                                    .style(AAStyle()
-                                        .color(AAColor.white))))))))
-            .colors(["#04d69f", "#1e90ff", "#ef476f", "#ffd066"])
-            .plotOptions(AAPlotOptions()
-                .series(AASeries()
-                    .stacking(.normal)
-                    .marker(AAMarker()
-                        .radius(0))))
-            .tooltip(AATooltip()
-                .followTouchMove(false))
-            .series([
-                AASeriesElement()
-                    .name("Tokyo Hot")
-                    .lineWidth(5.0)
-                    .fillOpacity(0.4)
-                    .data([0.45, 0.43, 0.50, 0.55, 0.58, 0.62, 0.83, 0.39, 0.56, 0.67, 0.50, 0.34, 0.50, 0.67, 0.58, 0.29, 0.46, 0.23, 0.47, 0.46, 0.38, 0.56, 0.48, 0.36]),
-                AASeriesElement()
-                    .name("Berlin Hot")
-                    .lineWidth(5.0)
-                    .fillOpacity(0.4)
-                    .data([0.38, 0.31, 0.32, 0.32, 0.64, 0.66, 0.86, 0.47, 0.52, 0.75, 0.52, 0.56, 0.54, 0.60, 0.46, 0.63, 0.54, 0.51, 0.58, 0.64, 0.60, 0.45, 0.36, 0.67]),
-                AASeriesElement()
-                    .name("London Hot")
-                    .lineWidth(5.0)
-                    .fillOpacity(0.4)
-                    .data([0.46, 0.32, 0.53, 0.58, 0.86, 0.68, 0.85, 0.73, 0.69, 0.71, 0.91, 0.74, 0.60, 0.50, 0.39, 0.67, 0.55, 0.49, 0.65, 0.45, 0.64, 0.47, 0.63, 0.64]),
-                AASeriesElement()
-                    .name("NewYork Hot")
-                    .lineWidth(5.0)
-                    .fillOpacity(0.4)
-                    .data([0.60, 0.51, 0.52, 0.53, 0.64, 0.84, 0.65, 0.68, 0.63, 0.47, 0.72, 0.60, 0.65, 0.74, 0.66, 0.65, 0.71, 0.59, 0.65, 0.77, 0.52, 0.53, 0.58, 0.53]),
-            ])
-    }
-    
 
 }

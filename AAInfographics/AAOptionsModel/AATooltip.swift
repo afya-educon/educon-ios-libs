@@ -30,10 +30,9 @@
  
  */
 
+import Foundation 
 
-/// https://api.highcharts.com/highcharts/tooltip
 public class AATooltip: AAObject {
-    public var animation: Any?
     public var backgroundColor: Any?
     public var borderColor: String?
     public var borderRadius: Float?
@@ -51,7 +50,7 @@ public class AATooltip: AAObject {
     public var valuePrefix: String?
     public var valueSuffix: String?
     public var followPointer: Bool?
-    public var followTouchMove: Bool? //https://api.highcharts.com.cn/highcharts#chart.panning
+    public var followTouchMove: Bool?//https://api.highcharts.com.cn/highcharts#chart.panning
     public var shadow: Bool?
     public var padding: Float?
     public var pointFormatter: String?
@@ -59,19 +58,6 @@ public class AATooltip: AAObject {
     public var hideDelay: Int?
     public var dateTimeLabelFormats: AADateTimeLabelFormats?
     public var split: Bool?
-    public var outside: Bool?
-    
-    @discardableResult
-    public func animation(_ prop: AAAnimation?) -> AATooltip {
-        animation = prop
-        return self
-    }
-    
-    @discardableResult
-    public func animation(_ prop: Bool?) -> AATooltip {
-        animation = prop
-        return self
-    }
     
     @discardableResult
     public func backgroundColor(_ prop: Any?) -> AATooltip {
@@ -116,14 +102,14 @@ public class AATooltip: AAObject {
     }
     
     @discardableResult
-    public func format(_ prop: String?) -> AATooltip {
+    public func format(_ prop: String) -> AATooltip {
         format = prop
         return self
     }
     
     @discardableResult
-    public func formatter(_ prop: String?) -> AATooltip {
-        formatter = prop?.aa_toPureJSString()
+    public func formatter(_ prop: String) -> AATooltip {
+        formatter = prop.aa_toPureJSString()
         return self
     }
     
@@ -188,14 +174,14 @@ public class AATooltip: AAObject {
     }
     
     @discardableResult
-    public func pointFormatter(_ prop: String?) -> AATooltip {
-        pointFormatter = prop?.aa_toPureJSString()
+    public func pointFormatter(_ prop: String) -> AATooltip {
+        pointFormatter = prop.aa_toPureJSString()
         return self
     }
     
     @discardableResult
-    public func positioner(_ prop: String?) -> AATooltip {
-        positioner = prop?.aa_toPureJSString()
+    public func positioner(_ prop: String) -> AATooltip {
+        positioner = prop.aa_toPureJSString()
         return self
     }
     
@@ -216,13 +202,8 @@ public class AATooltip: AAObject {
         split = prop
         return self
     }
-    
-    @discardableResult
-    public func outside(_ prop: Bool?) -> AATooltip {
-        outside = prop
-        return self
-    }
 
+    
     public override init() {
         enabled = true
         shared = true

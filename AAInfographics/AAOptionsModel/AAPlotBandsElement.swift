@@ -30,8 +30,8 @@
  
  */
 
+import Foundation
 
-/// https://api.highcharts.com/highcharts/xAxis.plotBands
 public class AAPlotBandsElement: AAObject {
     public var from: Double?
     public var to: Double?
@@ -43,6 +43,7 @@ public class AAPlotBandsElement: AAObject {
     public var zIndex: Int?
     public var outerRadius: String?
     public var thickness: String?
+    
     
     @discardableResult
     public func from(_ prop: Double) -> AAPlotBandsElement {
@@ -107,4 +108,5 @@ public class AAPlotBandsElement: AAObject {
     public override init() {
         
     }   
+
 }

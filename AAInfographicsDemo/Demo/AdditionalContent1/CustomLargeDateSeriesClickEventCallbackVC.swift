@@ -19,14 +19,7 @@ class CustomLargeDateSeriesClickEventCallbackVC: UIViewController {
         static let customData2 = "customData2"
     }
     
-    private lazy var aaChartView: AAChartView = {
-        let chartView = AAChartView()
-        chartView.translatesAutoresizingMaskIntoConstraints = false
-        chartView.isScrollEnabled = false // Disable chart content scrolling
-        chartView.delegate = self as AAChartViewDelegate
-        return chartView
-    }()
-    
+    private var aaChartView: AAChartView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,18 +34,18 @@ class CustomLargeDateSeriesClickEventCallbackVC: UIViewController {
     }
     
     private func configureChartView() {
-        view.addSubview(aaChartView)
-        
-        NSLayoutConstraint.activate([
-            aaChartView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            aaChartView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            aaChartView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            aaChartView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
-        ])
+        aaChartView = AAChartView()
+        let chartViewWidth = view.frame.size.width
+        let chartViewHeight = view.frame.size.height - 220
+        aaChartView!.frame = CGRect(x: 0, y: 60, width: chartViewWidth, height: chartViewHeight)
+        aaChartView!.isScrollEnabled = false//Disable chart content scrolling
+        aaChartView!.isClearBackgroundColor = true
+        aaChartView!.delegate = self as AAChartViewDelegate
+        view.addSubview(aaChartView!)
     }
     
     private func configureChartViewCustomEventMessageHandler() {
-        aaChartView.configuration.userContentController.add(AALeakAvoider.init(delegate: self), name: kUserContentMessageNamePointMoveOver)
+        aaChartView!.configuration.userContentController.add(AALeakAvoider.init(delegate: self), name: kUserContentMessageNamePointMoveOver)
     }
     
     private func configureChartOptions() -> AAOptions {

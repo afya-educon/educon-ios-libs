@@ -30,10 +30,8 @@
  
  */
 
+import Foundation
 
-/// https://api.highcharts.com/highcharts/plotOptions.series.states
-/// https://api.highcharts.com/highcharts/plotOptions.line.states
-/// https://api.highcharts.com/highcharts/series.line.states
 public class AAStates: AAObject {
     public var hover: AAHover?
     public var select: AASelect?
@@ -61,7 +59,6 @@ public class AAStates: AAObject {
         
     }
 }
-
 
 public class AAHover: AAObject {
     public var enabled: Bool?
@@ -119,7 +116,6 @@ public class AAHover: AAObject {
     }
 }
 
-
 public class AASelect: AAObject {
     public var enabled: Bool?
     public var borderColor: String?
@@ -156,7 +152,6 @@ public class AASelect: AAObject {
     }
 }
 
-
 public class AAHalo: AAObject {
     public var attributes: [String: Any]?
     public var opacity: Float?
@@ -185,7 +180,6 @@ public class AAHalo: AAObject {
     }
 }
 
-
 public class AAInactive: AAObject {
     public var enabled: Bool?
     public var opacity: Float?
@@ -207,7 +201,6 @@ public class AAInactive: AAObject {
     }
 }
 
-/// https://api.highcharts.com/class-reference/Highcharts.SVGAttributes
 public class AASVGAttributes: AAObject {
     public var fill: String?
     public var stroke: String?
@@ -231,6 +224,10 @@ public class AASVGAttributes: AAObject {
         return self
     }
     
+    public override init() {
+        
+    }
+    
     public func toDictionaryProp() -> [String: Any]? {
         var dic = [String: Any]()
         if let fill = fill {
@@ -243,9 +240,5 @@ public class AASVGAttributes: AAObject {
             dic["stroke-width"] = strokeWidth
         }
         return dic
-    }
-    
-    public override init() {
-        
     }
 }

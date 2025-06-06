@@ -30,8 +30,8 @@
  
  */
 
+import Foundation
 
-/// https://api.highcharts.com/highcharts/title
 public class AATitle: AAObject {
     public var text: String?
     public var style: AAStyle?
@@ -93,5 +93,6 @@ public class AATitle: AAObject {
     public override init() {
         
     }
+    
 }
 

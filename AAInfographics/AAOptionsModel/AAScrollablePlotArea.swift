@@ -30,8 +30,9 @@
  
  */
 
+import Foundation
 
-/// https://api.highcharts.com/highcharts/chart.scrollablePlotArea
+//Refer to online API document: https://api.highcharts.com/highcharts/chart.scrollablePlotArea
 public class AAScrollablePlotArea: AAObject {
     public var minHeight: Int?
     public var minWidth: Int?

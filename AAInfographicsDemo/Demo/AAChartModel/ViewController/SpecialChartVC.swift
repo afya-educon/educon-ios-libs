@@ -51,7 +51,6 @@ class SpecialChartVC: AABaseChartVC {
         /*True Special Chart*/
         case .pie:             return SpecialChartComposer.pieChart()
         case .bubble:          return SpecialChartComposer.bubbleChart()
-        case .packedbubble:    return SpecialChartComposer.packedbubbleChart()
         case .scatter:         return SpecialChartComposer.scatterChart()
         case .arearange:       return SpecialChartComposer.arearangeChart()
         case .areasplinerange: return SpecialChartComposer.areasplinerangeChart()
@@ -63,8 +62,6 @@ class SpecialChartVC: AABaseChartVC {
         case .errorbar:        return SpecialChartComposer.errorbarChart()
         case .gauge :          return SpecialChartComposer.gaugeChart()
         case .polygon:         return SpecialChartComposer.polygonChart()
-        case .columnpyramid:   return SpecialChartComposer.columnpyramidChart()
-
         }
     }
   

@@ -12,15 +12,8 @@ import WebKit
 class CustomTooltipClickEventCallbackVC: UIViewController {
     let kUserContentMessageNameTooltipClicked = "tooltipClicked"
     
-    private lazy var aaChartView: AAChartView = {
-        let chartView = AAChartView()
-        chartView.translatesAutoresizingMaskIntoConstraints = false
-        chartView.isScrollEnabled = false // Disable chart content scrolling
-        chartView.delegate = self as AAChartViewDelegate
-        return chartView
-    }()
-    
-    
+    private var aaChartView: AAChartView!
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -34,18 +27,23 @@ class CustomTooltipClickEventCallbackVC: UIViewController {
     }
     
     private func configureChartView() {
-        view.addSubview(aaChartView)
-        
-        NSLayoutConstraint.activate([
-            aaChartView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            aaChartView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            aaChartView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            aaChartView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
-        ])
+        aaChartView = AAChartView()
+        let chartViewWidth = view.frame.size.width
+        let chartViewHeight = view.frame.size.height - 220
+        aaChartView!.frame = CGRect(x: 0, y: 60, width: chartViewWidth, height: chartViewHeight)
+        aaChartView!.isScrollEnabled = false//Disable chart content scrolling
+        aaChartView!.isClearBackgroundColor = true
+        aaChartView!.delegate = self as AAChartViewDelegate
+        if #available(iOS 16.4, *) {
+            aaChartView.isInspectable = true
+        } else {
+            // Fallback on earlier versions
+        }
+        view.addSubview(aaChartView!)
     }
     
     private func configureChartViewCustomEventMessageHandler() {
-        aaChartView.configuration.userContentController.add(AALeakAvoider.init(delegate: self), name: kUserContentMessageNameTooltipClicked)
+        aaChartView!.configuration.userContentController.add(AALeakAvoider.init(delegate: self), name: kUserContentMessageNameTooltipClicked)
     }
     
     //开发日志: ChatGPT的方法在 v11.3.0 版本中无效, 浪费了我大半天时间排查原因, 我向 Claude 提出如下问题后, 得到了兼容性更强的版本, 在 v11.3.0 上也能正常工作了

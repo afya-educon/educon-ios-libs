@@ -30,11 +30,11 @@
  
  */
 
+import Foundation
 
-/// https://api.highcharts.com/highcharts/plotOptions.series
 public class AASeries: AAObject {
-    public var borderColor: String? //The border color, It is only valid for column, bar, pie, columnrange, pyramid and funnel chart types
-    public var borderWidth: Float? //The border width, It is only valid for column, bar, pie, columnrange, pyramid and funnel chart types
+    public var borderColor: String?        //The border color, It is only valid for column, bar, pie, columnrange, pyramid and funnel chart types
+    public var borderWidth: Float?         //The border width, It is only valid for column, bar, pie, columnrange, pyramid and funnel chart types
     public var marker: AAMarker?
     public var stacking: String?
     public var animation: Any? //AAAnimation | Bool
@@ -42,7 +42,7 @@ public class AASeries: AAObject {
     public var colorByPoint: Bool?
     public var connectNulls: Bool? //Whether reconnects the broken line of the chart
     public var events: AASeriesEvents?
-    public var shadow: Any? //Bool | AAShadow
+    public var shadow: AAShadow?
     public var dataLabels: AADataLabels?
     public var states: AAStates?
     public var allowPointSelect: Bool?
@@ -58,7 +58,7 @@ public class AASeries: AAObject {
     public var minPointLength: Float?
     public var tooltip: AATooltip?
     public var lineWidth: Float?
-    public var negativeColor: String?
+    
 
     @discardableResult
     public func borderColor(_ prop: String?) -> Self {
@@ -117,12 +117,6 @@ public class AASeries: AAObject {
     @discardableResult
     public func events(_ prop: AASeriesEvents?) -> Self {
         events = prop
-        return self
-    }
-    
-    @discardableResult
-    public func shadow(_ prop: Bool?) -> Self {
-        shadow = prop
         return self
     }
     
@@ -222,12 +216,6 @@ public class AASeries: AAObject {
         return self
     }
     
-    @discardableResult
-    public func negativeColor(_ prop: String?) -> Self {
-        negativeColor = prop
-        return self
-    }
-    
     public override init() {
         
     }
@@ -268,6 +256,7 @@ public class AASeriesEvents: AAObject {
         
     }
 }
+
 
 
 public class AAPoint: AAObject {

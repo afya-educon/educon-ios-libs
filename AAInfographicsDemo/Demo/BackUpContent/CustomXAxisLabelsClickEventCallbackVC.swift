@@ -14,15 +14,8 @@ import WebKit
 class CustomXAxisLabelsClickEventCallbackVC: UIViewController {
     let kUserContentMessageNameXAxisLabelsClick = "XAxisLabelsClick"
     
-    private lazy var aaChartView: AAChartView = {
-        let chartView = AAChartView()
-        chartView.translatesAutoresizingMaskIntoConstraints = false
-        chartView.isScrollEnabled = false // Disable chart content scrolling
-        chartView.delegate = self as AAChartViewDelegate
-        return chartView
-    }()
-    
-    
+    private var aaChartView: AAChartView!
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -36,22 +29,20 @@ class CustomXAxisLabelsClickEventCallbackVC: UIViewController {
     }
     
     private func configureChartView() {
-        view.addSubview(aaChartView)
-        
-        NSLayoutConstraint.activate([
-            aaChartView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            aaChartView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            aaChartView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            aaChartView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
-        ])
+        aaChartView = AAChartView()
+        let chartViewWidth = view.frame.size.width
+        let chartViewHeight = view.frame.size.height - 220
+        aaChartView!.frame = CGRect(x: 0, y: 60, width: chartViewWidth, height: chartViewHeight)
+        aaChartView!.isScrollEnabled = false//Disable chart content scrolling
+        aaChartView!.isClearBackgroundColor = true
+        aaChartView!.delegate = self as AAChartViewDelegate
+        view.addSubview(aaChartView!)
     }
     
     private func configureChartViewCustomEventMessageHandler() {
-        aaChartView.configuration.userContentController.add(AALeakAvoider.init(delegate: self), name: kUserContentMessageNameXAxisLabelsClick)
+        aaChartView!.configuration.userContentController.add(AALeakAvoider.init(delegate: self), name: kUserContentMessageNameXAxisLabelsClick)
     }
     
-    /*
-    //给 x 轴标签的文字添加点击事件
     private func configureChartOptions() -> AAOptions {
         AAOptions()
             .chart(AAChart()
@@ -78,65 +69,6 @@ class CustomXAxisLabelsClickEventCallbackVC: UIViewController {
             .series([
                 AASeriesElement()
                     .data([7.0, 6.9, 2.5, 14.5, 18.2, 21.5, 5.2, 26.5, 23.3, 45.3, 13.9, 9.6])
-                    .marker(AAMarker()
-                        .lineColor(AAColor.red)
-                        .lineWidth(3)
-                        .radius(10))
-            ])
-    }
-    */
-    
-    
-    //给 x 轴标签添加图片, 并且给图片添加点击事件
-    private func configureChartOptions() -> AAOptions {
-        AAOptions()
-            .chart(AAChart()
-                .type(.areaspline)
-                .events(AAChartEvents()
-                    .load("""
-            function() {
-                const chart = this;
-                setTimeout(function() {
-                    try {
-                        const imgElements = document.querySelectorAll('.highcharts-xaxis-labels img');
-                        console.log('找到图片元素数量:', imgElements.length);
-                        
-                        imgElements.forEach(function(img, index) {
-                            img.style.cursor = 'pointer';
-                            img.addEventListener('click', function(e) {
-                                e.stopPropagation(); 
-                                const category = chart.xAxis[0].categories[index];
-                                console.log('图片被点击:', category, index);
-                                const message = {
-                                    category: category,
-                                    index: index,
-                                };
-                                window.webkit.messageHandlers.\(kUserContentMessageNameXAxisLabelsClick).postMessage(message);
-                            });
-                        });
-                    } catch(e) {
-                        console.error('事件绑定错误:', e);
-                    }
-                }, 500); 
-            }
-""")))
-            .xAxis(AAXAxis()
-                .categories(["苹果", "香蕉", "橙子"])
-                .labels(AALabels()
-                    .useHTML(true)
-                    .formatter("""
-                        function() {
-                            const imgMap = {
-                                '苹果': 'https://cdn-icons-png.flaticon.com/512/415/415733.png',
-                                '香蕉': 'https://cdn-icons-png.flaticon.com/512/3144/3144456.png',
-                                '橙子': 'https://cdn-icons-png.flaticon.com/512/3081/3081840.png'
-                            };
-                            return `<img src="${imgMap[this.value]}" width="30" height="30" alt="${this.value}" title="${this.value}" class="chart-xaxis-img">`;
-                        }
-                    """)))
-            .series([
-                AASeriesElement()
-                    .data([7.0, 6.9, 2.5])
                     .marker(AAMarker()
                         .lineColor(AAColor.red)
                         .lineWidth(3)

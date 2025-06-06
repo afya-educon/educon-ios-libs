@@ -30,12 +30,8 @@
  
  */
 
+import Foundation
 
-/// https://api.highcharts.com/highcharts/plotOptions.series.marker
-/// https://api.highcharts.com/highcharts/plotOptions.line.marker
-/// https://api.highcharts.com/highcharts/plotOptions.scatter.marker
-/// https://api.highcharts.com/highcharts/series.line.marker
-/// https://api.highcharts.com/highcharts/series.scatter.marker
 public class AAMarker: AAObject {
     public var enabled: Bool?
     public var radius: Float?
@@ -214,6 +210,7 @@ public class AAMarkerSelect: AAObject {
         radius = prop
         return self
     }
+
 
     public override init() {
 
