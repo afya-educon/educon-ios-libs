@@ -1,0 +1,389 @@
+# Place this file in the SOURCE repository at .github/workflows/migrate-repository.yml
+#
+# Tokens are passed as workflow inputs:
+#   gh_source_pat  classic PAT, owner/migrator in the source org  (scopes: admin:org, repo, workflow)
+#   gh_pat         classic PAT, owner/migrator in the target org  (scopes: admin:org, repo, workflow)
+#
+# The target repository uses the same name and visibility as the source repository.
+#
+# Teams are NOT migrated by GEI. Teams referenced in rulesets (bypass actors and
+# required reviewers of pull_request rules) are remapped by slug, so create them in
+# the target org (with the same slug and access to the repo) before running this.
+#
+# Optional repository secret (in the source repo), used to recreate webhook secrets:
+#   WEBHOOK_SECRETS  JSON object mapping webhook URL -> secret, e.g.
+#                    {"https://ci.example.com/hook": "s3cr3t", "https://other.example.com/gh": "abc"}
+#   Webhooks that had a secret but have no entry here are created INACTIVE.
+
+name: Migrate repository to another org
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_org:
+        description: Destination organization
+        required: true
+      gh_source_pat:
+        description: PAT for the SOURCE org (GH_SOURCE_PAT)
+        required: true
+      gh_pat:
+        description: PAT for the TARGET org (GH_PAT)
+        required: true
+      assume-role-development:
+        description: Override AWS_CREDS_ROLE_TO_ASSUME for the development environment (leave empty to copy)
+        required: false
+        default: ""
+      assume-role-staging:
+        description: Override AWS_CREDS_ROLE_TO_ASSUME for the staging environment (leave empty to copy)
+        required: false
+        default: ""
+      assume-role-production:
+        description: Override AWS_CREDS_ROLE_TO_ASSUME for the production environment (leave empty to copy)
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+env:
+  SOURCE_ORG: ${{ github.repository_owner }}
+  SOURCE_NAME: ${{ github.event.repository.name }}
+  SOURCE_REPO: ${{ github.repository }}
+  TARGET_ORG: ${{ inputs.target_org }}
+  TARGET_NAME: ${{ github.event.repository.name }}
+  TARGET_REPO: ${{ inputs.target_org }}/${{ github.event.repository.name }}
+  VISIBILITY: ${{ github.event.repository.visibility }}
+
+jobs:
+  # 1. Migrate the repository with GitHub Enterprise Importer
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      # Tokens are read from the event file (not via ${{ }}) so they never appear in the logs
+      - name: Load and mask tokens
+        run: |
+          pat=$(jq -r '.inputs.gh_pat' "$GITHUB_EVENT_PATH")
+          src=$(jq -r '.inputs.gh_source_pat' "$GITHUB_EVENT_PATH")
+          echo "::add-mask::$pat"
+          echo "::add-mask::$src"
+          { echo "GH_PAT=$pat"; echo "GH_SOURCE_PAT=$src"; echo "GH_TOKEN=$pat"; } >> "$GITHUB_ENV"
+
+      - name: Install GEI extension
+        run: gh extension install github/gh-gei
+
+      - name: Migrate repository
+        run: |
+          echo "Migrating $SOURCE_REPO -> $TARGET_REPO (visibility: $VISIBILITY)"
+          gh gei migrate-repo \
+            --github-source-org "$SOURCE_ORG" \
+            --source-repo "$SOURCE_NAME" \
+            --github-target-org "$TARGET_ORG" \
+            --target-repo "$TARGET_NAME" \
+            --target-repo-visibility "$VISIBILITY"
+
+  # 2. Copy repository-level variables and secrets
+  repo-settings:
+    needs: migrate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Load and mask tokens
+        run: |
+          pat=$(jq -r '.inputs.gh_pat' "$GITHUB_EVENT_PATH")
+          src=$(jq -r '.inputs.gh_source_pat' "$GITHUB_EVENT_PATH")
+          echo "::add-mask::$pat"
+          echo "::add-mask::$src"
+          { echo "GH_PAT=$pat"; echo "GH_SOURCE_PAT=$src"; echo "GH_TOKEN=$pat"; } >> "$GITHUB_ENV"
+
+      - name: Copy repository variables
+        run: |
+          GH_TOKEN="$GH_SOURCE_PAT" gh api --paginate \
+            "repos/$SOURCE_REPO/actions/variables?per_page=30" \
+            --jq '.variables[] | @base64' > vars.txt
+
+          while read -r row; do
+            [ -z "$row" ] && continue
+            name=$(echo "$row" | base64 -d | jq -r .name)
+            echo "$row" | base64 -d | jq -j .value \
+              | gh variable set "$name" -R "$TARGET_REPO"
+            echo "Copied variable: $name"
+          done < vars.txt
+
+      - name: Copy repository secrets
+        env:
+          ALL_SECRETS: ${{ toJSON(secrets) }}
+        run: |
+          # Only repo-level secret names (excludes org secrets and GITHUB_TOKEN)
+          names=$(GH_TOKEN="$GH_SOURCE_PAT" gh api --paginate \
+            "repos/$SOURCE_REPO/actions/secrets?per_page=100" --jq '.secrets[].name')
+
+          for name in $names; do
+            if [ "$name" = "WEBHOOK_SECRETS" ]; then
+              echo "Skipping helper secret: $name"; continue
+            fi
+            if ! jq -e --arg n "$name" 'has($n)' <<<"$ALL_SECRETS" >/dev/null; then
+              echo "::warning::Secret $name not available to this job, skipping"; continue
+            fi
+            jq -j --arg n "$name" '.[$n]' <<<"$ALL_SECRETS" \
+              | gh secret set "$name" -R "$TARGET_REPO"
+            echo "Copied secret: $name"
+          done
+
+  # 3. List the environments of the source repository
+  environments:
+    needs: migrate
+    runs-on: ubuntu-latest
+    outputs:
+      list: ${{ steps.list.outputs.list }}
+    steps:
+      - name: Load and mask tokens
+        run: |
+          pat=$(jq -r '.inputs.gh_pat' "$GITHUB_EVENT_PATH")
+          src=$(jq -r '.inputs.gh_source_pat' "$GITHUB_EVENT_PATH")
+          echo "::add-mask::$pat"
+          echo "::add-mask::$src"
+          { echo "GH_PAT=$pat"; echo "GH_SOURCE_PAT=$src"; echo "GH_TOKEN=$pat"; } >> "$GITHUB_ENV"
+
+      - id: list
+        run: |
+          list=$(GH_TOKEN="$GH_SOURCE_PAT" gh api "repos/$SOURCE_REPO/environments?per_page=100" \
+            --jq '[.environments[].name]')
+          echo "Environments: $list"
+          echo "list=$list" >> "$GITHUB_OUTPUT"
+
+      - name: Check role overrides match existing environments
+        env:
+          LIST: ${{ steps.list.outputs.list }}
+          ROLE_DEVELOPMENT: ${{ inputs['assume-role-development'] }}
+          ROLE_STAGING: ${{ inputs['assume-role-staging'] }}
+          ROLE_PRODUCTION: ${{ inputs['assume-role-production'] }}
+        run: |
+          for env in development staging production; do
+            var="ROLE_${env^^}"
+            [ -z "${!var}" ] && continue
+            if ! jq -e --arg e "$env" 'map(ascii_downcase) | index($e)' <<<"$LIST" >/dev/null; then
+              echo "::warning::assume-role-$env was provided, but the source repo has no '$env' environment, so it will be ignored"
+            fi
+          done
+
+  # 4. Recreate each environment and copy its variables and secrets
+  environment-settings:
+    needs: environments
+    if: ${{ needs.environments.outputs.list != '[]' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        env_name: ${{ fromJSON(needs.environments.outputs.list) }}
+    # Running inside the environment is what exposes its secrets to this job
+    environment: ${{ matrix.env_name }}
+    env:
+      ENV_NAME: ${{ matrix.env_name }}
+      # Role override for this environment (empty = keep the value copied from the source repo)
+      ROLE_OVERRIDE: >-
+        ${{
+          (matrix.env_name == 'development' && inputs['assume-role-development']) ||
+          (matrix.env_name == 'staging' && inputs['assume-role-staging']) ||
+          (matrix.env_name == 'production' && inputs['assume-role-production']) ||
+          ''
+        }}
+    steps:
+      - name: Load and mask tokens
+        run: |
+          pat=$(jq -r '.inputs.gh_pat' "$GITHUB_EVENT_PATH")
+          src=$(jq -r '.inputs.gh_source_pat' "$GITHUB_EVENT_PATH")
+          echo "::add-mask::$pat"
+          echo "::add-mask::$src"
+          { echo "GH_PAT=$pat"; echo "GH_SOURCE_PAT=$src"; echo "GH_TOKEN=$pat"; } >> "$GITHUB_ENV"
+
+      - name: Create environment in target
+        run: |
+          enc=$(jq -rn --arg v "$ENV_NAME" '$v|@uri')
+          echo "ENV_ENC=$enc" >> "$GITHUB_ENV"
+          gh api -X PUT "repos/$TARGET_REPO/environments/$enc" --silent
+          echo "Environment ready: $ENV_NAME"
+
+      - name: Copy environment variables
+        run: |
+          GH_TOKEN="$GH_SOURCE_PAT" gh api --paginate \
+            "repos/$SOURCE_REPO/environments/$ENV_ENC/variables?per_page=30" \
+            --jq '.variables[] | @base64' > vars.txt
+
+          while read -r row; do
+            [ -z "$row" ] && continue
+            name=$(echo "$row" | base64 -d | jq -r .name)
+            echo "$row" | base64 -d | jq -j .value \
+              | gh variable set "$name" -R "$TARGET_REPO" --env "$ENV_NAME"
+            echo "Copied variable: $ENV_NAME/$name"
+          done < vars.txt
+
+      - name: Override AWS_CREDS_ROLE_TO_ASSUME
+        if: ${{ env.ROLE_OVERRIDE != '' }}
+        run: |
+          if ! [[ "$ROLE_OVERRIDE" =~ ^arn:aws[a-z-]*:iam::[0-9]{12}:role/.+ ]]; then
+            echo "::warning::'$ROLE_OVERRIDE' does not look like an IAM role ARN, setting it anyway"
+          fi
+          gh variable set AWS_CREDS_ROLE_TO_ASSUME --body "$ROLE_OVERRIDE" \
+            -R "$TARGET_REPO" --env "$ENV_NAME"
+          echo "Overrode AWS_CREDS_ROLE_TO_ASSUME in $ENV_NAME: $ROLE_OVERRIDE"
+
+      - name: Copy environment secrets
+        env:
+          ALL_SECRETS: ${{ toJSON(secrets) }}
+        run: |
+          names=$(GH_TOKEN="$GH_SOURCE_PAT" gh api --paginate \
+            "repos/$SOURCE_REPO/environments/$ENV_ENC/secrets?per_page=100" \
+            --jq '.secrets[].name')
+
+          for name in $names; do
+            if ! jq -e --arg n "$name" 'has($n)' <<<"$ALL_SECRETS" >/dev/null; then
+              echo "::warning::Secret $ENV_NAME/$name not available, skipping"; continue
+            fi
+            jq -j --arg n "$name" '.[$n]' <<<"$ALL_SECRETS" \
+              | gh secret set "$name" -R "$TARGET_REPO" --env "$ENV_NAME"
+            echo "Copied secret: $ENV_NAME/$name"
+          done
+
+  # 5. Copy repository rulesets (org-level rulesets are not included)
+  rulesets:
+    needs: migrate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Load and mask tokens
+        run: |
+          pat=$(jq -r '.inputs.gh_pat' "$GITHUB_EVENT_PATH")
+          src=$(jq -r '.inputs.gh_source_pat' "$GITHUB_EVENT_PATH")
+          echo "::add-mask::$pat"
+          echo "::add-mask::$src"
+          { echo "GH_PAT=$pat"; echo "GH_SOURCE_PAT=$src"; echo "GH_TOKEN=$pat"; } >> "$GITHUB_ENV"
+
+      - name: Build team mapping (source id -> slug -> target id)
+        run: |
+          GH_TOKEN="$GH_SOURCE_PAT" gh api --paginate "orgs/$SOURCE_ORG/teams?per_page=100" \
+            --jq '.[] | {(.id|tostring): .slug}' | jq -s 'add // {}' > source_teams.json
+          gh api --paginate "orgs/$TARGET_ORG/teams?per_page=100" \
+            --jq '.[] | {(.slug): .id}' | jq -s 'add // {}' > target_teams.json
+
+      - name: Copy rulesets
+        run: |
+          existing=$(gh api --paginate \
+            "repos/$TARGET_REPO/rulesets?includes_parents=false&per_page=100" --jq '.[].name')
+          ids=$(GH_TOKEN="$GH_SOURCE_PAT" gh api --paginate \
+            "repos/$SOURCE_REPO/rulesets?includes_parents=false&per_page=100" --jq '.[].id')
+
+          # Counts required reviewer entries across pull_request rules
+          count_rev='[.rules[]? | select(.type == "pull_request") | .parameters.required_reviewers[]?] | length'
+
+          for id in $ids; do
+            GH_TOKEN="$GH_SOURCE_PAT" gh api "repos/$SOURCE_REPO/rulesets/$id" > rs.json
+            name=$(jq -r .name rs.json)
+
+            if grep -Fxq "$name" <<<"$existing"; then
+              echo "Already exists in target, skipping: $name"; continue
+            fi
+
+            # Keep only writable fields; remap Team ids by slug in both bypass actors and
+            # required reviewers of pull_request rules; drop teams with no match in the target
+            jq --slurpfile st source_teams.json --slurpfile tt target_teams.json '
+              def remap_team: $tt[0][ $st[0][tostring] // "" ];
+              {name, target, enforcement, conditions,
+               rules: [ (.rules // [])[]
+                 | if .type == "pull_request" and (.parameters.required_reviewers? != null) then
+                     .parameters.required_reviewers |= [ .[]
+                       | if .reviewer.type == "Team" then
+                           (.reviewer.id | remap_team) as $new
+                           | if $new then .reviewer.id = $new else empty end
+                         else . end ]
+                   else . end ],
+               bypass_actors: [ (.bypass_actors // [])[]
+                 | if .actor_type == "Team" then
+                     (.actor_id | remap_team) as $new
+                     | if $new then .actor_id = $new else empty end
+                   else . end ]}
+              | with_entries(select(.value != null))' rs.json > payload.json
+
+            before=$(jq '.bypass_actors // [] | length' rs.json)
+            after=$(jq '.bypass_actors | length' payload.json)
+            if [ "$before" != "$after" ]; then
+              echo "::warning::Ruleset '$name': $((before - after)) team bypass actor(s) had no matching team in $TARGET_ORG and were dropped"
+            fi
+
+            rev_before=$(jq "$count_rev" rs.json)
+            rev_after=$(jq "$count_rev" payload.json)
+            if [ "$rev_before" != "$rev_after" ]; then
+              echo "::warning::Ruleset '$name': $((rev_before - rev_after)) required reviewer team(s) had no matching team in $TARGET_ORG and were dropped"
+            fi
+
+            if gh api -X POST "repos/$TARGET_REPO/rulesets" --input payload.json --silent; then
+              echo "Copied ruleset: $name"
+            else
+              echo "::warning::Ruleset '$name' was rejected, retrying without bypass actors"
+              jq '.bypass_actors = []' payload.json > payload_nobypass.json
+              if gh api -X POST "repos/$TARGET_REPO/rulesets" --input payload_nobypass.json --silent; then
+                echo "::warning::Copied ruleset '$name' WITHOUT bypass actors, review it in the target repo"
+              else
+                echo "::error::Could not copy ruleset '$name'"
+              fi
+            fi
+          done
+
+  # 6. Copy repository webhooks
+  webhooks:
+    needs: migrate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Load and mask tokens
+        run: |
+          pat=$(jq -r '.inputs.gh_pat' "$GITHUB_EVENT_PATH")
+          src=$(jq -r '.inputs.gh_source_pat' "$GITHUB_EVENT_PATH")
+          echo "::add-mask::$pat"
+          echo "::add-mask::$src"
+          { echo "GH_PAT=$pat"; echo "GH_SOURCE_PAT=$src"; echo "GH_TOKEN=$pat"; } >> "$GITHUB_ENV"
+
+      - name: Copy webhooks
+        env:
+          WEBHOOK_SECRETS: ${{ secrets.WEBHOOK_SECRETS }}
+        run: |
+          map="${WEBHOOK_SECRETS:-}"
+          [ -z "$map" ] && map='{}'
+          if ! jq -e 'type == "object"' <<<"$map" >/dev/null 2>&1; then
+            echo "::error::WEBHOOK_SECRETS must be a JSON object of {\"url\": \"secret\"}"; exit 1
+          fi
+
+          GH_TOKEN="$GH_SOURCE_PAT" gh api --paginate "repos/$SOURCE_REPO/hooks?per_page=100" \
+            --jq '.[] | @base64' > hooks.txt
+          existing=$(gh api --paginate "repos/$TARGET_REPO/hooks?per_page=100" --jq '.[].config.url')
+
+          while read -r row; do
+            [ -z "$row" ] && continue
+            hook=$(echo "$row" | base64 -d)
+            url=$(jq -r '.config.url' <<<"$hook")
+
+            if grep -Fxq "$url" <<<"$existing"; then
+              echo "Already exists in target, skipping: $url"; continue
+            fi
+
+            had_secret=$(jq -r '.config.secret != null' <<<"$hook")
+            secret=$(jq -r --arg u "$url" '.[$u] // empty' <<<"$map")
+            [ -n "$secret" ] && echo "::add-mask::$secret"
+
+            active=$(jq '.active' <<<"$hook")
+            if [ "$had_secret" = "true" ] && [ -z "$secret" ]; then
+              active=false
+              echo "::warning::Webhook $url had a secret but none was provided in WEBHOOK_SECRETS; created INACTIVE"
+            fi
+
+            jq --arg s "$secret" --argjson active "$active" '
+              {name: "web", active: $active, events,
+               config: ({url: .config.url,
+                         content_type: .config.content_type,
+                         insecure_ssl: .config.insecure_ssl}
+                        + (if $s != "" then {secret: $s} else {} end))}' \
+              <<<"$hook" > hook.json
+
+            if gh api -X POST "repos/$TARGET_REPO/hooks" --input hook.json --silent; then
+              echo "Copied webhook: $url (active: $active)"
+            else
+              echo "::error::Could not copy webhook: $url"
+            fi
+            rm -f hook.json
+          done < hooks.txt
